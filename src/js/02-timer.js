@@ -4,8 +4,8 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
 const btnStart = document.querySelector('[data-start]');
 const timer = document.querySelector('.timer');
-let timeInMs = null;
-let timeObject = null;
+let timerCounterMilisecond = null;
+let convertedTime = null;
 let timerId = null;
 
 const options = {
@@ -18,9 +18,10 @@ const options = {
   },
   onClose(selectedDates) {
     if (selectedDates[0] > this.defaultDate) {
-      timeInMs = selectedDates[0].getTime() - this.defaultDate.getTime();
-      timeObject = convertMs(timeInMs);
-      setTimer(timeObject);
+      timerCounterMilisecond =
+        selectedDates[0].getTime() - this.defaultDate.getTime();
+      convertedTime = convertMs(timerCounterMilisecond);
+      setTimer(convertedTime);
       Notify.success('You can push "Start"');
       btnStart.removeAttribute('disabled');
     }
@@ -33,13 +34,25 @@ btnStart.setAttribute('disabled', '');
 flatpickr('#datetime-picker', options);
 btnStart.addEventListener('click', onBtnClick);
 function onBtnClick(event) {
-  timerId = setInterval(countdownTimer, 10);
+  if (timerId === null) {
+    timerId = setInterval(countdownTimer, 1000);
+  } else {
+    Notify.warning('Waiting while timer is finish   ');
+  }
 }
 function setTimer({ days, hours, minutes, seconds }) {
-  timer.querySelector('[data-days]').innerText = addLeadingZero(days);
-  timer.querySelector('[data-hours]').innerText = addLeadingZero(hours);
-  timer.querySelector('[data-minutes]').innerText = addLeadingZero(minutes);
-  timer.querySelector('[data-seconds]').innerText = addLeadingZero(seconds);
+  if (+timer.querySelector('[data-days]').innerText !== days) {
+    timer.querySelector('[data-days]').innerText = addLeadingZero(days);
+  }
+  if (+timer.querySelector('[data-hours]').innerText !== hours) {
+    timer.querySelector('[data-hours]').innerText = addLeadingZero(hours);
+  }
+  if (+timer.querySelector('[data-minutes]').innerText !== minutes) {
+    timer.querySelector('[data-minutes]').innerText = addLeadingZero(minutes);
+  }
+  if (+timer.querySelector('[data-seconds]').innerText !== seconds) {
+    timer.querySelector('[data-seconds]').innerText = addLeadingZero(seconds);
+  }
 }
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
@@ -64,11 +77,12 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 function countdownTimer() {
-  timeInMs -= 1000;
-  if (timeInMs <= 1000) {
+  timerCounterMilisecond -= 1000;
+  if (timerCounterMilisecond < 1000) {
     clearInterval(timerId);
+    timerId = null;
     Notify.info('Timer stop counting');
   }
-  timeObject = convertMs(timeInMs);
-  setTimer(timeObject);
+  convertedTime = convertMs(timerCounterMilisecond);
+  setTimer(convertedTime);
 }
