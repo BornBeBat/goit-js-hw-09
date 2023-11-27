@@ -1,12 +1,11 @@
 import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
+import 'flatpickr/dist/flatpickr.min.css';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
+
 const btnStart = document.querySelector('[data-start]');
 const timer = document.querySelector('.timer');
-let timerCounterMilisecond = null;
-let convertedTime = null;
-let timerId = null;
 
 const options = {
   enableTime: true,
@@ -24,15 +23,21 @@ const options = {
       setTimer(convertedTime);
       Notify.success('You can push "Start"');
       btnStart.removeAttribute('disabled');
+      btnStart.addEventListener('click', onBtnClick);
     }
     if (selectedDates[0] < this.defaultDate) {
       Notify.failure('Please choose a date in the future');
     }
   },
 };
+
+let timerCounterMilisecond = null;
+let convertedTime = null;
+let timerId = null;
+
 btnStart.setAttribute('disabled', '');
 flatpickr('#datetime-picker', options);
-btnStart.addEventListener('click', onBtnClick);
+
 function onBtnClick(event) {
   if (timerId === null) {
     timerId = setInterval(countdownTimer, 1000);
@@ -40,6 +45,7 @@ function onBtnClick(event) {
     Notify.warning('Waiting while timer is finish   ');
   }
 }
+
 function setTimer({ days, hours, minutes, seconds }) {
   if (+timer.querySelector('[data-days]').innerText !== days) {
     timer.querySelector('[data-days]').innerText = addLeadingZero(days);
@@ -54,6 +60,7 @@ function setTimer({ days, hours, minutes, seconds }) {
     timer.querySelector('[data-seconds]').innerText = addLeadingZero(seconds);
   }
 }
+
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
@@ -76,12 +83,15 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
+
 function countdownTimer() {
   timerCounterMilisecond -= 1000;
   if (timerCounterMilisecond < 1000) {
     clearInterval(timerId);
     timerId = null;
     Notify.info('Timer stop counting');
+    btnStart.setAttribute('disabled', '');
+    btnStart.removeEventListener('click', onBtnClick);
   }
   convertedTime = convertMs(timerCounterMilisecond);
   setTimer(convertedTime);
