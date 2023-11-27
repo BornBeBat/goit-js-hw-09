@@ -4,8 +4,13 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
 
-const btnStart = document.querySelector('[data-start]');
-const timer = document.querySelector('.timer');
+const refs = {
+  btnStart: document.querySelector('[data-start]'),
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+};
 
 const options = {
   enableTime: true,
@@ -22,8 +27,8 @@ const options = {
       convertedTime = convertMs(timerCounterMilisecond);
       setTimer(convertedTime);
       Notify.success('You can push "Start"');
-      btnStart.removeAttribute('disabled');
-      btnStart.addEventListener('click', onBtnClick);
+      refs.btnStart.removeAttribute('disabled');
+      refs.btnStart.addEventListener('click', onBtnClick);
     }
     if (selectedDates[0] < this.defaultDate) {
       Notify.failure('Please choose a date in the future');
@@ -35,7 +40,7 @@ let timerCounterMilisecond = null;
 let convertedTime = null;
 let timerId = null;
 
-btnStart.setAttribute('disabled', '');
+refs.btnStart.setAttribute('disabled', '');
 flatpickr('#datetime-picker', options);
 
 function onBtnClick(event) {
@@ -47,17 +52,17 @@ function onBtnClick(event) {
 }
 
 function setTimer({ days, hours, minutes, seconds }) {
-  if (+timer.querySelector('[data-days]').innerText !== days) {
-    timer.querySelector('[data-days]').innerText = addLeadingZero(days);
+  if (+refs.days.innerHTML !== days) {
+    refs.days.innerHTML = addLeadingZero(days);
   }
-  if (+timer.querySelector('[data-hours]').innerText !== hours) {
-    timer.querySelector('[data-hours]').innerText = addLeadingZero(hours);
+  if (+refs.hours.innerHTML !== hours) {
+    refs.hours.innerHTML = addLeadingZero(hours);
   }
-  if (+timer.querySelector('[data-minutes]').innerText !== minutes) {
-    timer.querySelector('[data-minutes]').innerText = addLeadingZero(minutes);
+  if (+refs.minutes.innerHTML !== minutes) {
+    refs.minutes.innerHTML = addLeadingZero(minutes);
   }
-  if (+timer.querySelector('[data-seconds]').innerText !== seconds) {
-    timer.querySelector('[data-seconds]').innerText = addLeadingZero(seconds);
+  if (+refs.seconds.innerHTML !== seconds) {
+    refs.seconds.innerHTML = addLeadingZero(seconds);
   }
 }
 
@@ -89,9 +94,11 @@ function countdownTimer() {
   if (timerCounterMilisecond < 1000) {
     clearInterval(timerId);
     timerId = null;
+
     Notify.info('Timer stop counting');
-    btnStart.setAttribute('disabled', '');
-    btnStart.removeEventListener('click', onBtnClick);
+
+    refs.btnStart.setAttribute('disabled', '');
+    refs.btnStart.removeEventListener('click', onBtnClick);
   }
   convertedTime = convertMs(timerCounterMilisecond);
   setTimer(convertedTime);

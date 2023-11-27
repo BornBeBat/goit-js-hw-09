@@ -4,9 +4,10 @@ let timerId = null;
 body.addEventListener('click', onClick);
 
 function onClick(event) {
-  if (event.target.dataset.hasOwnProperty('start')) {
-    event.target.nextElementSibling.removeAttribute('disabled');
-    event.target.setAttribute('disabled', '');
+  const target = event.target;
+  if (target.dataset.hasOwnProperty('start')) {
+    target.nextElementSibling.removeAttribute('disabled');
+    target.setAttribute('disabled', '');
 
     //   body.style.backgroundColor = getRandomHexColor();
     body.setAttribute('style', `background-color: ${getRandomHexColor()}`);
@@ -17,9 +18,9 @@ function onClick(event) {
     }, 1000);
   }
 
-  if (event.target.dataset.hasOwnProperty('stop')) {
-    event.target.setAttribute('disabled', '');
-    event.target.previousElementSibling.removeAttribute('disabled');
+  if (target.dataset.hasOwnProperty('stop')) {
+    target.setAttribute('disabled', '');
+    target.previousElementSibling.removeAttribute('disabled');
 
     clearInterval(timerId);
   }
