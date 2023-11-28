@@ -46,8 +46,8 @@ flatpickr('#datetime-picker', options);
 function onBtnClick(event) {
   if (timerId === null) {
     timerId = setInterval(countdownTimer, 1000);
-  } else {
-    Notify.warning('Waiting while timer is finish   ');
+    // refs.btnStart.setAttribute('disabled', '');
+    // refs.btnStart.removeEventListener('click', onBtnClick);
   }
 }
 
@@ -96,9 +96,6 @@ function countdownTimer() {
     timerId = null;
 
     Notify.info('Timer stop counting');
-
-    refs.btnStart.setAttribute('disabled', '');
-    refs.btnStart.removeEventListener('click', onBtnClick);
   }
   convertedTime = convertMs(timerCounterMilisecond);
   setTimer(convertedTime);

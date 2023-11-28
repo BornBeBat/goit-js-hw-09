@@ -6,8 +6,8 @@ const form = document.querySelector('.form');
 form.addEventListener('submit', onSubmit);
 
 function onSubmit(event) {
-  event.preventDefault();
   const { delay, step, amount } = form;
+  event.preventDefault();
   createPromiseSet(delay.value, step.value, amount.value);
 }
 
