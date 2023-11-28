@@ -6,6 +6,7 @@ import 'notiflix/dist/notiflix-3.2.6.min.css';
 
 const refs = {
   btnStart: document.querySelector('[data-start]'),
+  input: document.querySelector('#datetime-picker'),
   days: document.querySelector('[data-days]'),
   hours: document.querySelector('[data-hours]'),
   minutes: document.querySelector('[data-minutes]'),
@@ -46,24 +47,26 @@ flatpickr('#datetime-picker', options);
 function onBtnClick(event) {
   if (timerId === null) {
     timerId = setInterval(countdownTimer, 1000);
-    // refs.btnStart.setAttribute('disabled', '');
-    // refs.btnStart.removeEventListener('click', onBtnClick);
+    refs.btnStart.setAttribute('disabled', '');
+    refs.input.setAttribute('disabled', '');
+
+    refs.btnStart.removeEventListener('click', onBtnClick);
   }
 }
 
 function setTimer({ days, hours, minutes, seconds }) {
-  if (+refs.days.innerHTML !== days) {
-    refs.days.innerHTML = addLeadingZero(days);
-  }
-  if (+refs.hours.innerHTML !== hours) {
-    refs.hours.innerHTML = addLeadingZero(hours);
-  }
-  if (+refs.minutes.innerHTML !== minutes) {
-    refs.minutes.innerHTML = addLeadingZero(minutes);
-  }
-  if (+refs.seconds.innerHTML !== seconds) {
-    refs.seconds.innerHTML = addLeadingZero(seconds);
-  }
+  // if (+refs.days.innerHTML !== days) {
+  refs.days.innerHTML = addLeadingZero(days);
+  // }
+  // if (+refs.hours.innerHTML !== hours) {
+  refs.hours.innerHTML = addLeadingZero(hours);
+  // }
+  // if (+refs.minutes.innerHTML !== minutes) {
+  refs.minutes.innerHTML = addLeadingZero(minutes);
+  // }
+  // if (+refs.seconds.innerHTML !== seconds) {
+  refs.seconds.innerHTML = addLeadingZero(seconds);
+  // }
 }
 
 function addLeadingZero(value) {
@@ -94,8 +97,9 @@ function countdownTimer() {
   if (timerCounterMilisecond < 1000) {
     clearInterval(timerId);
     timerId = null;
-
     Notify.info('Timer stop counting');
+    refs.btnStart.removeAttribute('disabled', '');
+    refs.input.removeAttribute('disabled', '');
   }
   convertedTime = convertMs(timerCounterMilisecond);
   setTimer(convertedTime);
