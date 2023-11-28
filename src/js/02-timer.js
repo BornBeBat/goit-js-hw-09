@@ -16,7 +16,7 @@ const refs = {
 const options = {
   enableTime: true,
   time_24hr: true,
-  defaultDate: new Date(),
+  defaultDate: null,
   minuteIncrement: 1,
   onOpen() {
     this.defaultDate = new Date();
@@ -49,24 +49,43 @@ function onBtnClick(event) {
     timerId = setInterval(countdownTimer, 1000);
     refs.btnStart.setAttribute('disabled', '');
     refs.input.setAttribute('disabled', '');
-
     refs.btnStart.removeEventListener('click', onBtnClick);
   }
 }
 
 function setTimer({ days, hours, minutes, seconds }) {
-  // if (+refs.days.innerHTML !== days) {
   refs.days.innerHTML = addLeadingZero(days);
-  // }
-  // if (+refs.hours.innerHTML !== hours) {
   refs.hours.innerHTML = addLeadingZero(hours);
-  // }
-  // if (+refs.minutes.innerHTML !== minutes) {
   refs.minutes.innerHTML = addLeadingZero(minutes);
-  // }
-  // if (+refs.seconds.innerHTML !== seconds) {
   refs.seconds.innerHTML = addLeadingZero(seconds);
-  // }
+}
+
+// Alternative option with checking previous values
+
+// function setTimer({ days, hours, minutes, seconds }) {
+//   if (+refs.days.innerHTML !== days) {
+//     refs.days.innerHTML = addLeadingZero(days);
+//   }
+//   if (+refs.hours.innerHTML !== hours) {
+//     refs.hours.innerHTML = addLeadingZero(hours);
+//   }
+//   if (+refs.minutes.innerHTML !== minutes) {
+//     refs.minutes.innerHTML = addLeadingZero(minutes);
+//   }
+//   refs.seconds.innerHTML = addLeadingZero(seconds);
+// }
+
+function countdownTimer() {
+  timerCounterMilisecond -= 1000;
+  if (timerCounterMilisecond < 1000) {
+    clearInterval(timerId);
+    timerId = null;
+    Notify.info('Timer stop counting');
+    refs.btnStart.removeAttribute('disabled', '');
+    refs.input.removeAttribute('disabled', '');
+  }
+  convertedTime = convertMs(timerCounterMilisecond);
+  setTimer(convertedTime);
 }
 
 function addLeadingZero(value) {
@@ -90,17 +109,4 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
-}
-
-function countdownTimer() {
-  timerCounterMilisecond -= 1000;
-  if (timerCounterMilisecond < 1000) {
-    clearInterval(timerId);
-    timerId = null;
-    Notify.info('Timer stop counting');
-    refs.btnStart.removeAttribute('disabled', '');
-    refs.input.removeAttribute('disabled', '');
-  }
-  convertedTime = convertMs(timerCounterMilisecond);
-  setTimer(convertedTime);
 }
