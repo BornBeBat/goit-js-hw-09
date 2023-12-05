@@ -7,11 +7,12 @@ import 'notiflix/dist/notiflix-3.2.6.min.css';
 const refs = {
   btnStart: document.querySelector('[data-start]'),
   input: document.querySelector('#datetime-picker'),
-  days: document.querySelector('[data-days]'),
-  hours: document.querySelector('[data-hours]'),
-  minutes: document.querySelector('[data-minutes]'),
-  seconds: document.querySelector('[data-seconds]'),
+  timer: document.querySelector('.timer'),
 };
+
+let timerCounterMilisecond = null;
+let convertedTime = null;
+let timerId = null;
 
 const options = {
   enableTime: true,
@@ -37,55 +38,38 @@ const options = {
   },
 };
 
-let timerCounterMilisecond = null;
-let convertedTime = null;
-let timerId = null;
-
 refs.btnStart.setAttribute('disabled', '');
 flatpickr('#datetime-picker', options);
 
-function onBtnClick(event) {
-  if (timerId === null) {
-    timerId = setInterval(countdownTimer, 1000);
-    refs.btnStart.setAttribute('disabled', '');
-    refs.input.setAttribute('disabled', '');
-    refs.btnStart.removeEventListener('click', onBtnClick);
-  }
+function onBtnClick() {
+  timerId = setInterval(stepDown, 1000);
+  refs.btnStart.setAttribute('disabled', '');
+  refs.input.setAttribute('disabled', '');
+  refs.btnStart.removeEventListener('click', onBtnClick);
 }
 
-function setTimer({ days, hours, minutes, seconds }) {
-  refs.days.innerHTML = addLeadingZero(days);
-  refs.hours.innerHTML = addLeadingZero(hours);
-  refs.minutes.innerHTML = addLeadingZero(minutes);
-  refs.seconds.innerHTML = addLeadingZero(seconds);
+function setTimer(date) {
+  date.forEach((element, index) => {
+    refs.timer.children[index].querySelector('.value').textContent =
+      addLeadingZero(element);
+  });
 }
 
-// Alternative option with checking previous values
-
-// function setTimer({ days, hours, minutes, seconds }) {
-//   if (+refs.days.innerHTML !== days) {
-//     refs.days.innerHTML = addLeadingZero(days);
-//   }
-//   if (+refs.hours.innerHTML !== hours) {
-//     refs.hours.innerHTML = addLeadingZero(hours);
-//   }
-//   if (+refs.minutes.innerHTML !== minutes) {
-//     refs.minutes.innerHTML = addLeadingZero(minutes);
-//   }
-//   refs.seconds.innerHTML = addLeadingZero(seconds);
-// }
-
-function countdownTimer() {
+function stepDown() {
   timerCounterMilisecond -= 1000;
   if (timerCounterMilisecond < 1000) {
-    clearInterval(timerId);
-    timerId = null;
-    Notify.info('Timer stop counting');
-    refs.btnStart.removeAttribute('disabled', '');
-    refs.input.removeAttribute('disabled', '');
+    stopCounting();
   }
   convertedTime = convertMs(timerCounterMilisecond);
   setTimer(convertedTime);
+}
+
+function stopCounting() {
+  clearInterval(timerId);
+  timerId = null;
+  Notify.info('Timer stop counting');
+  refs.btnStart.removeAttribute('disabled', '');
+  refs.input.removeAttribute('disabled', '');
 }
 
 function addLeadingZero(value) {
@@ -93,20 +77,13 @@ function addLeadingZero(value) {
 }
 
 function convertMs(ms) {
-  // Number of milliseconds per unit of time
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
-
-  // Remaining days
   const days = Math.floor(ms / day);
-  // Remaining hours
   const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
   const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-
-  return { days, hours, minutes, seconds };
+  return [days, hours, minutes, seconds];
 }
