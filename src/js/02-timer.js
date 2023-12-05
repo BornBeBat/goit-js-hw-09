@@ -27,7 +27,7 @@ const options = {
       timerCounterMilisecond =
         selectedDates[0].getTime() - this.defaultDate.getTime();
       convertedTime = convertMs(timerCounterMilisecond);
-      setTimer(convertedTime);
+      updateText(convertedTime);
       Notify.success('You can push "Start"');
       refs.btnStart.removeAttribute('disabled');
       refs.btnStart.addEventListener('click', onBtnClick);
@@ -42,26 +42,26 @@ refs.btnStart.setAttribute('disabled', '');
 flatpickr('#datetime-picker', options);
 
 function onBtnClick() {
-  timerId = setInterval(stepDown, 1000);
+  timerId = setInterval(countingDown, 1000);
   refs.btnStart.setAttribute('disabled', '');
   refs.input.setAttribute('disabled', '');
   refs.btnStart.removeEventListener('click', onBtnClick);
 }
 
-function setTimer(date) {
+function updateText(date) {
+  const child = refs.timer.children;
   date.forEach((element, index) => {
-    refs.timer.children[index].querySelector('.value').textContent =
-      addLeadingZero(element);
+    child[index].querySelector('.value').textContent = addLeadingZero(element);
   });
 }
 
-function stepDown() {
+function countingDown() {
   timerCounterMilisecond -= 1000;
   if (timerCounterMilisecond < 1000) {
     stopCounting();
   }
   convertedTime = convertMs(timerCounterMilisecond);
-  setTimer(convertedTime);
+  updateText(convertedTime);
 }
 
 function stopCounting() {
